@@ -1,65 +1,139 @@
-import Image from "next/image";
+'use client'
+
+import { SimpleWalletConnect } from '@/components/SimpleWalletConnect'
+import { QuestCard } from '@/components/QuestCard'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Trophy, Target, Zap, Users } from 'lucide-react'
+
+const mockQuests = [
+  {
+    id: '1',
+    title: 'First Steps',
+    description: 'Complete your first blockchain transaction',
+    reward: 10,
+    progress: 0,
+    total: 1,
+    difficulty: 'Easy' as const,
+    participants: 1250,
+  },
+  {
+    id: '2',
+    title: 'Swap Master',
+    description: 'Perform 5 token swaps on DEX',
+    reward: 25,
+    progress: 2,
+    total: 5,
+    difficulty: 'Medium' as const,
+    deadline: '2 days left',
+    participants: 450,
+  },
+  {
+    id: '3',
+    title: 'Liquidity Provider',
+    description: 'Provide liquidity to any pool for 7 days',
+    reward: 50,
+    progress: 0,
+    total: 7,
+    difficulty: 'Hard' as const,
+    deadline: '5 days left',
+    participants: 89,
+  },
+  {
+    id: '4',
+    title: 'Daily Trader',
+    description: 'Make at least one transaction every day for 7 days',
+    reward: 30,
+    progress: 3,
+    total: 7,
+    difficulty: 'Medium' as const,
+    participants: 234,
+  },
+]
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      <header className="border-b bg-white/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-8 h-8 text-purple-600" />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Reactive Quest System
+            </h1>
+          </div>
+          <SimpleWalletConnect />
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4 text-gray-900">
+            Complete Quests, Earn Rewards
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Experience blockchain gamification with real-time updates powered by Somnia Reactivity
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Quests</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">4</div>
+              <p className="text-xs text-muted-foreground">Available now</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completed</CardTitle>
+              <Trophy className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">12</div>
+              <p className="text-xs text-muted-foreground">Total achievements</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Earned</CardTitle>
+              <Zap className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">245</div>
+              <p className="text-xs text-muted-foreground">SOMI tokens</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Global Rank</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">#42</div>
+              <p className="text-xs text-muted-foreground">Among 1,250 players</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Available Quests</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {mockQuests.map((quest) => (
+              <QuestCard
+                key={quest.id}
+                quest={quest}
+                onStart={(questId) => console.log('Starting quest:', questId)}
+              />
+            ))}
+          </div>
         </div>
       </main>
     </div>
-  );
+  )
 }

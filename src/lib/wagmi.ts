@@ -1,18 +1,13 @@
-import { cookieStorage, createStorage, http } from 'wagmi'
-import { wagmiAdapter, projectId } from './appkit'
-import { arbitrum, mainnet, sepolia } from 'wagmi/chains'
+import { http, createConfig } from 'wagmi'
+import { mainnet, sepolia } from 'wagmi/chains'
 
 export function getConfig() {
   return createConfig({
-    chains: [arbitrum, mainnet, sepolia],
+    chains: [mainnet, sepolia],
     transports: {
-      [arbitrum.id]: http(),
       [mainnet.id]: http(),
       [sepolia.id]: http(),
     },
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
   })
 }
 
