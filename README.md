@@ -1,36 +1,184 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reactive Quest System
 
-## Getting Started
+A gamified blockchain achievement system with real-time updates powered by Somnia Reactivity SDK.
 
-First, run the development server:
+## 🎯 Overview
 
+The Reactive Quest System demonstrates the power of Somnia's native on-chain reactivity by creating a gamified layer where users can complete quests, earn achievements, and level up based on their blockchain activities - all updated instantly without polling.
+
+## ✨ Key Features
+
+- **Real-time Quest Updates**: Instant progress tracking using Somnia Reactivity
+- **Achievement System**: Unlock badges and earn SOMI tokens
+- **Live Progress Bars**: Visual feedback that updates in real-time
+- **Event-driven Architecture**: Reacts to on-chain events automatically
+- **Beautiful UI**: Modern, responsive design with Tailwind CSS
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS, Lucide Icons
+- **Blockchain**: Somnia Network, Ethers.js
+- **Real-time**: Somnia Reactivity SDK
+- **UI Components**: Radix UI, Custom Components
+
+## 🛠 Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/mandip-kamaliya/reactive-quest-system.git
+cd reactive-quest-system
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+# or with legacy peer deps for Somnia SDK
+npm install --legacy-peer-deps
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.local.example .env.local
+# Add your Somnia project configuration
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+├── src/
+│   ├── app/                 # Next.js app router
+│   ├── components/          # React components
+│   │   ├── ui/             # Reusable UI components
+│   │   ├── QuestCard.tsx   # Quest display component
+│   │   ├── RealTimeQuestProgress.tsx  # Real-time updates
+│   │   └── SimpleWalletConnect.tsx  # Wallet connection
+│   ├── hooks/              # Custom React hooks
+│   │   └── useSomniaReactivity.ts  # Somnia Reactivity hook
+│   ├── lib/                # Utility libraries
+│   └── contracts/          # Smart contracts
+│       └── QuestSystem.sol # Quest system contract
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚡ Somnia Reactivity Integration
 
-## Deploy on Vercel
+### Real-time Event Handling
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app uses the `@somnia-chain/reactivity` SDK to subscribe to blockchain events:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```typescript
+const { subscribeToQuestEvents, events } = useSomniaReactivity(userAddress)
+
+// Subscribe to quest progress events
+const subscription = await client.subscribe({
+  filters: {
+    address: userAddress,
+    topics: ['QuestProgress', 'QuestCompleted', 'AchievementUnlocked']
+  },
+  onEvent: (event) => {
+    // Update UI in real-time
+    handleQuestEvent(event)
+  }
+})
+```
+
+### Smart Contract Events
+
+The `QuestSystem.sol` contract emits events that are captured by Somnia Reactivity:
+
+```solidity
+event QuestProgressUpdated(address indexed user, uint256 indexed questId, uint256 progress);
+event QuestCompleted(address indexed user, uint256 indexed questId, uint256 reward);
+event AchievementUnlocked(address indexed user, string achievementType, uint256 rarity);
+```
+
+### Key Benefits
+
+- **No Polling**: Events are pushed directly to the application
+- **Atomic Updates**: Events + state from the same block
+- **Low Latency**: Sub-second response times
+- **Cost Efficient**: Pay only for actual event notifications
+
+## 🎮 Demo Features
+
+1. **Quest Dashboard**: View available quests with progress tracking
+2. **Real-time Progress**: Watch progress bars update instantly
+3. **Achievement Notifications**: Get instant alerts for completed quests
+4. **Event Log**: See real-time blockchain events as they arrive
+5. **Connection Status**: Monitor Somnia Reactivity connectivity
+
+## 🏆 Hackathon Submission
+
+This project was built for the **Somnia Reactivity Mini Hackathon** and demonstrates:
+
+- ✅ **Technical Excellence**: Clean React architecture with real-time updates
+- ✅ **Real-time UX**: Instant progress updates without polling
+- ✅ **Somnia Integration**: Full deployment on Somnia testnet with SDK usage
+- ✅ **Potential Impact**: Gamification framework other protocols can adopt
+
+## 🔧 Configuration
+
+### Somnia Testnet Setup
+
+1. Get SOMI tokens from the [faucet](https://docs.somnia.network/developer/network-info)
+2. Configure the RPC URL in the Somnia client
+3. Deploy the QuestSystem contract to Somnia testnet
+4. Set up event subscriptions for your user address
+
+### Environment Variables
+
+```env
+NEXT_PUBLIC_SOMNIA_RPC_URL=https://testnet.somnia.network
+NEXT_PUBLIC_PROJECT_ID=your-project-id
+```
+
+## 🚀 Deployment
+
+### Deploy to Somnia Testnet
+
+1. Compile the smart contract:
+```bash
+npx hardhat compile
+```
+
+2. Deploy to Somnia testnet:
+```bash
+npx hardhat run scripts/deploy.js --network somniaTestnet
+```
+
+3. Update the contract address in your frontend
+
+### Deploy Frontend
+
+```bash
+npm run build
+npm start
+```
+
+## 📖 Documentation
+
+- [Somnia Reactivity Docs](https://docs.somnia.network/developer/reactivity)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+**Built with ❤️ for Somnia Reactivity Mini Hackathon 2026**
