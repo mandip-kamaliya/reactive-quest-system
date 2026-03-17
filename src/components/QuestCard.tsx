@@ -15,15 +15,17 @@ interface Quest {
   difficulty: 'Easy' | 'Medium' | 'Hard'
   deadline?: string
   participants?: number
+  started?: boolean
   completed?: boolean
 }
 
 interface QuestCardProps {
   quest: Quest
   onStart?: (questId: string) => void
+  isLoading?: boolean
 }
 
-export function QuestCard({ quest, onStart }: QuestCardProps) {
+export function QuestCard({ quest, onStart, isLoading }: QuestCardProps) {
   const progressPercentage = (quest.progress / quest.total) * 100
 
   const getDifficultyColor = (difficulty: string) => {
@@ -79,11 +81,18 @@ export function QuestCard({ quest, onStart }: QuestCardProps) {
         </div>
 
         <Button 
-          className="w-full" 
-          onClick={() => onStart?.(quest.id)}
-          disabled={quest.completed}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
+          onClick={() => {
+            console.log('Quest button clicked:', quest.id)
+            if (onStart) {
+              onStart(quest.id)
+            } else {
+              console.log('No onStart handler provided')
+            }
+          }}
+          disabled={quest.completed || isLoading}
         >
-          {quest.completed ? 'Completed' : quest.progress > 0 ? 'Continue' : 'Start Quest'}
+          {quest.completed ? '✅ Completed' : quest.started ? '⛓ Complete on Blockchain' : '⚡ Start on Blockchain'}
         </Button>
       </CardContent>
     </Card>
