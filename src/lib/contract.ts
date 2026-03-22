@@ -1,107 +1,11 @@
 import { ethers } from 'ethers'
+import { CONTRACT_INFO } from './contract-info'
 
-// Contract ABI - will be updated after deployment
-export const QUEST_SYSTEM_ABI = [
-  {
-    "inputs": [
-      {"internalType": "uint256", "name": "_questId", "type": "uint256"}
-    ],
-    "name": "startQuest",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256", "name": "_questId", "type": "uint256"},
-      {"internalType": "uint256", "name": "_stepsCompleted", "type": "uint256"}
-    ],
-    "name": "updateQuestProgress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256", "name": "_questId", "type": "uint256"}
-    ],
-    "name": "completeQuest",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256", "name": "_questId", "type": "uint256"}
-    ],
-    "name": "getQuest",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "string", "name": "title", "type": "string"},
-          {"internalType": "string", "name": "description", "type": "string"},
-          {"internalType": "uint256", "name": "reward", "type": "uint256"},
-          {"internalType": "uint256", "name": "totalSteps", "type": "uint256"},
-          {"internalType": "uint256", "name": "difficulty", "type": "uint256"},
-          {"internalType": "bool", "name": "isActive", "type": "bool"},
-          {"internalType": "uint256", "name": "participantCount", "type": "uint256"}
-        ],
-        "internalType": "struct QuestSystem.Quest",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address", "name": "_user", "type": "address"},
-      {"internalType": "uint256", "name": "_questId", "type": "uint256"}
-    ],
-    "name": "getUserQuest",
-    "outputs": [
-      {
-        "components": [
-          {"internalType": "uint256", "name": "questId", "type": "uint256"},
-          {"internalType": "address", "name": "user", "type": "address"},
-          {"internalType": "uint256", "name": "currentStep", "type": "uint256"},
-          {"internalType": "bool", "name": "isCompleted", "type": "bool"},
-          {"internalType": "uint256", "name": "startedAt", "type": "uint256"},
-          {"internalType": "uint256", "name": "completedAt", "type": "uint256"}
-        ],
-        "internalType": "struct QuestSystem.UserQuest",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getActiveQuests",
-    "outputs": [
-      {"internalType": "uint256[]", "name": "", "type": "uint256[]"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address", "name": "_user", "type": "address"}
-    ],
-    "name": "getUserCompletedQuests",
-    "outputs": [
-      {"internalType": "uint256[]", "name": "", "type": "uint256[]"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-
-// Contract address - temporary test address (will be updated after deployment)
-export const QUEST_SYSTEM_ADDRESS = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
+// Contract ABI and address from deployed contracts
+export const QUEST_SYSTEM_ABI = CONTRACT_INFO.questSystem.abi
+export const QUEST_SYSTEM_ADDRESS = CONTRACT_INFO.questSystem.address
+export const SOMI_TOKEN_ABI = CONTRACT_INFO.somiToken.abi
+export const SOMI_TOKEN_ADDRESS = CONTRACT_INFO.somiToken.address
 
 // Network configurations
 export const NETWORKS = {
@@ -342,7 +246,57 @@ export class ContractService {
   }
 }
 
+export class TokenService {
+  private provider: ethers.BrowserProvider | null = null
+  private somiTokenContract: ethers.Contract | null = null
+
+  async initialize() {
+    if (!window.ethereum) {
+      throw new Error('MetaMask not installed')
+    }
+
+    this.provider = new ethers.BrowserProvider(window.ethereum)
+    this.somiTokenContract = new ethers.Contract(
+      SOMI_TOKEN_ADDRESS,
+      SOMI_TOKEN_ABI,
+      await this.provider.getSigner()
+    )
+
+    console.log('SOMI Token initialized:', SOMI_TOKEN_ADDRESS)
+    return true
+  }
+
+  async getTokenBalance(address: string) {
+    if (!this.somiTokenContract) {
+      throw new Error('Token contract not initialized')
+    }
+
+    try {
+      const balance = await this.somiTokenContract.balanceOf(address)
+      return ethers.formatUnits(balance, 18) // Convert from wei to SOMI
+    } catch (error: any) {
+      console.error('Failed to get token balance:', error)
+      return '0'
+    }
+  }
+
+  async getFormattedBalance() {
+    if (!window.ethereum) return '0'
+    
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+      if (accounts.length === 0) return '0'
+      
+      return await this.getTokenBalance(accounts[0])
+    } catch (error) {
+      console.error('Error getting balance:', error)
+      return '0'
+    }
+  }
+}
+
 export const contractService = new ContractService()
+export const tokenService = new TokenService()
 
 // Add TypeScript declaration for window.ethereum
 declare global {
