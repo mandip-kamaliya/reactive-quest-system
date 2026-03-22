@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { QuestCard } from '@/components/QuestCard'
 import { RealTimeQuestProgress } from '@/components/RealTimeQuestProgress'
 import { SimpleWalletConnect } from '@/components/SimpleWalletConnect'
-import { contractService } from '@/lib/contract'
+import { contractService, tokenService } from '@/lib/contract'
 
 const mockQuests = [
   {
@@ -63,6 +63,7 @@ export default function Home() {
   const [quests, setQuests] = useState(mockQuests)
   const [account, setAccount] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [somiBalance, setSomiBalance] = useState('0')
 
   useEffect(() => {
     // Check if wallet is connected
@@ -75,6 +76,12 @@ export default function Home() {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' })
         if (accounts.length > 0) {
           setAccount(accounts[0])
+          
+          // Initialize token service and get balance
+          await tokenService.initialize()
+          const balance = await tokenService.getFormattedBalance()
+          setSomiBalance(balance)
+          
           loadQuestProgress(accounts[0])
         }
       } catch (error) {
@@ -265,8 +272,8 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">450</div>
-              <p className="text-xs text-gray-600">SOMI earned</p>
+              <div className="text-2xl font-bold text-gray-900">{somiBalance}</div>
+              <p className="text-xs text-gray-600">SOMI tokens</p>
             </CardContent>
           </Card>
           
